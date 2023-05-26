@@ -1,0 +1,45 @@
+services:
+
+  grafana:
+    image: grafana/grafana:9.3.6
+    container_name: grafana
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./platform/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./platform/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./platform/grafana/grafana.ini:/etc/grafana/grafana.ini
+
+  loki:
+    image: grafana/loki:2.7.3
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./platform/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  tempo:
+    image: grafana/tempo:2.0.0
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"     # Tempo
+      - "4317:4317"     # OTLP
+      - "9411:9411"     # Zipkin
+    volumes:
+      - ./platform/tempo/tempo.yml:/etc/tempo-config.yml

@@ -1,0 +1,57 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '3.1.0'
+  id 'io.spring.dependency-management' version '1.1.0'
+  //id 'org.graalvm.buildtools.native' version '0.9.20'
+}
+
+group = 'com.thomasvitale'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'com.github.loki4j:loki-logback-appender:1.4.0'
+
+	// Only on Apple Silicon. Why it's necessary: https://github.com/netty/netty/issues/11020
+	runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.91.Final:osx-aarch_64'
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.named('bootBuildImage') {
+	imageName = "order-service"
+
+	if (System.getProperty( "os.arch" ).toLowerCase().startsWith('aarch')) {
+		// This builder is only for ARM64 systems.
+		// For more info: https://github.com/dashaun/paketo-arm64
+		builder = "ghcr.io/dashaun/builder-arm:tiny"
+	}
+
+	// Set to "true" if you want to build a native image with GraalVM.
+	environment = ["BP_NATIVE_IMAGE": "false"]
+}

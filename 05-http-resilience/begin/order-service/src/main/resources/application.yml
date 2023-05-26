@@ -1,0 +1,9 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: order-service
+
+order:
+  instrument-service: http://localhost:8080
