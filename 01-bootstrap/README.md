@@ -11,7 +11,7 @@
 
 In this exercise, you will initialize the skeleton for an Instrument Service application to manage musical instruments.
 
-* Initialize a new Spring Boot project from [Spring Initializr](https://start.spring.io) with Java 17,  `Spring Web`, and `Spring Boot DevTools`.
+* Initialize a new Spring Boot project from [Spring Initializr](https://start.spring.io) with Java 17,  `Spring Web`, and `Spring Boot DevTools`. Check the [docs](https://www.jetbrains.com/help/idea/spring-boot.html#application-update-policies) for configuring DevTools in IntelliJ.
 
 * Implement a method handling requests to the `/` endpoint and returning a `String`.
 
